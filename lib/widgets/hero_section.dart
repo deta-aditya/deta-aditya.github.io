@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../app_styling.dart';
 import 'primary_button.dart';
 
 class HeroSection extends StatelessWidget {
@@ -10,9 +12,9 @@ class HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 128.0,
-        vertical: 200.0,
+      padding: EdgeInsets.symmetric(
+        horizontal: context.read<AppStyling>().horizontalPagePadding,
+        vertical: context.read<AppStyling>().verticalPagePadding,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

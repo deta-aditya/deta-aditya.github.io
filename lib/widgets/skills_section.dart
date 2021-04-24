@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:web_profile/app_styling.dart';
 
 const String description = """
 I have been learning web development since 2012 and never stop until this very day. I have used HTML, CSS, and JavaScript many times and fluent with latest JavaScript language specification we often call ES6. JavaScript is also my main language.
@@ -13,18 +15,20 @@ class SkillsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appStyling = context.read<AppStyling>();
+
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 50.0,
-        right: 128.0,
-        bottom: 50.0,
-        left: 50.0,
+      padding: EdgeInsets.only(
+        top: appStyling.sizeBetweenSections,
+        right: appStyling.horizontalPagePadding,
+        bottom: appStyling.sizeBetweenSections,
+        left: appStyling.horizontalPageDiscountPadding,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 128.0 - 50.0),
+            padding: EdgeInsets.only(left: appStyling.discountedHorizontalPagePadding),
             child: Text(
               "Skills",
               style: TextStyle(
@@ -43,16 +47,16 @@ class SkillsSection extends StatelessWidget {
                 children: <TextSpan>[
                   TextSpan(
                     text: 'import',
-                    style: TextStyle(color: Color(0xFF38BB36)),
+                    style: TextStyle(color: appStyling.codeKeywordColor),
                   ),
                   TextSpan(text: ' React '),
                   TextSpan(
                     text: 'from',
-                    style: TextStyle(color: Color(0xFF38BB36)),
+                    style: TextStyle(color: appStyling.codeKeywordColor),
                   ),
                   TextSpan(
                     text: " 'react'",
-                    style: TextStyle(color: Color(0xFFF8C43F)),
+                    style: TextStyle(color: appStyling.codeStringColor),
                   ),
                   TextSpan(text: "\nFoo"),
                 ],
@@ -79,6 +83,8 @@ class SkillItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appStyling = context.read<AppStyling>();
+
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -91,13 +97,13 @@ class SkillItem extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 128.0 - 50.0 - 52.0,
+                    horizontal: appStyling.discountedHorizontalMarkerPadding,
                   ),
                   child: Container(
-                    height: 25,
-                    width: 25,
+                    height: appStyling.markerSize,
+                    width: appStyling.markerSize,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(appStyling.markerSize),
                       color: Color(0xFFC4C4C4),
                     ),
                   ),
@@ -108,7 +114,7 @@ class SkillItem extends StatelessWidget {
             SizedBox(height: 20),
             Row(
               children: [
-                SizedBox(width: 128.0 - 50.0),
+                SizedBox(width: appStyling.discountedHorizontalPagePadding),
                 Container(
                   width: 450,
                   child: Text(
@@ -123,8 +129,8 @@ class SkillItem extends StatelessWidget {
         Column(
           children: [
             Container(
-              width: 500,
-              height: 35,
+              width: appStyling.codeWindowWidth,
+              height: appStyling.codeWindowFrameHeight,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: FractionalOffset.topCenter,
@@ -141,7 +147,7 @@ class SkillItem extends StatelessWidget {
               ),
             ),
             Container(
-              width: 500,
+              width: appStyling.codeWindowWidth,
               height: 300,
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
