@@ -1,0 +1,20 @@
+.nav-bar {
+  position: fixed;
+  width: 1200px;
+  background-color: #fff;
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px;
+}
+
+.nav-item {
+  /* margin-left: 80px; */
+  padding: 10px 40px;
+  color: #101010;
+  text-decoration: none;
+  border-radius: 100px;
+}
+
+.nav-item:hover {
+  background-color: #efefef;
+}
