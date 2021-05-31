@@ -1,5 +1,6 @@
 import React from 'react'
 import './BannerSection.css'
+import { MainButton } from '../MainButton'
 
 function BannerSection() {
   return (
@@ -12,7 +13,9 @@ function BannerSection() {
       <p className="profession">I'm a 
         <span className="typed-profession"> software developer_</span>
       </p>
-      <button className="main-button">Hire Me</button>
+      <div className="button-placeholder">
+        <MainButton>Hire Me</MainButton>
+      </div>
     </section>
   )
 }
