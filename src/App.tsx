@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavBar } from './components/NavBar'
+import { BannerSection } from './components/BannerSection'
 import './App.css';
 
 function App() {
@@ -7,7 +8,7 @@ function App() {
     <div className="App">
       <NavBar />
       <main className="main-content">
-        Hello, world!
+        <BannerSection />
       </main>
     </div>
   );
