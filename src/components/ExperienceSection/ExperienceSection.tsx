@@ -1,11 +1,12 @@
 import React from 'react'
 import { TimelineView } from '../TimelineView'
+import { SectionHeading } from '../SectionHeading'
 import './ExperienceSection.css'
 
 function ExperienceSection() {
   return (
     <section className="experience-section">
-      <h1 className="section-heading">Experience</h1>
+      <SectionHeading title="Experience" />
       <TimelineView>
         <TimelineView.Item 
           range="2020 NOV - 2021 APR"
