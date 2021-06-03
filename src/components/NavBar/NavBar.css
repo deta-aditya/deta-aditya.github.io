@@ -5,10 +5,10 @@
   display: flex;
   justify-content: flex-end;
   padding: 15px;
+  z-index: 99;
 }
 
 .nav-item {
-  /* margin-left: 80px; */
   padding: 10px 40px;
   color: #101010;
   text-decoration: none;
