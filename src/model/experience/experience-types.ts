@@ -1,7 +1,7 @@
 import { DateTime } from "luxon"
 import { DataProvider, State } from "../common/common-types"
 
-export const EMPLOYMENTS = ['Full Time', 'Part Time'] as const
+export const EMPLOYMENTS = ['Full Time', 'Part Time', 'Freelance', 'Internship'] as const
 export type Employment = typeof EMPLOYMENTS[number]
 
 export interface Experience {

@@ -2,7 +2,7 @@ import React from 'react'
 import { DateTime } from 'luxon'
 import { TimelineView } from '../TimelineView'
 import { SectionHeading } from '../SectionHeading'
-import { useExperience } from "../../data/experience"
+import { useExperience } from "../../model/experience"
 import './ExperienceSection.css'
 
 function ExperienceSection() {
@@ -20,7 +20,7 @@ function ExperienceSection() {
             key={idx}
             range={`${dateFormat(experience.startDate)} - ${dateFormat(experience.endDate)}`}
             title={experience.position}
-            subtitle={`${experience.employer} - ${experience.employment}`}
+            subtitle={`${experience.employment} at ${experience.employer}`}
             tags={experience.tags}
           />
         ))}
