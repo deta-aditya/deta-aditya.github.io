@@ -6,3 +6,7 @@ categories: sample
 ---
 
 Hello! This is the sample post.
+
+```ts
+console.log("Hello World!");
+```
