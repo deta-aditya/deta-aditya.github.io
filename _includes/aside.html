@@ -1,0 +1,44 @@
+<aside class="sidebar">
+    <img src="/assets/img/profile.jpg" alt="avatar" class="avatar" />
+    <a class="site-title" rel="author" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a>
+    <p class="site-description">{{- site.description | escape -}}</p>
+
+    <ul class="contact-list-icons">
+      {%- if site.email -%}
+        <li><a href="mailto:{{ site.email }}"><i class="fa-regular fa-envelope fa-lg"></i></a></li>
+      {%- endif -%}
+      {%- if site.github_username -%}
+        <li><a href="https://github.com/{{ site.github_username| cgi_escape | escape }}" target="_blank"><i class="fa-brands fa-github fa-lg"></i></a></li>
+      {%- endif -%}
+      {%- if site.instagram_username -%}
+        <li><a href="https://instagram.com/{{ site.instagram_username| cgi_escape | escape }}" target="_blank"><i class="fa-brands fa-instagram fa-lg"></i></a></li>
+      {%- endif -%}
+      {%- if site.linkedin_username -%}
+        <li><a href="https://www.linkedin.com/in/{{ site.linkedin_username| cgi_escape | escape }}" target="_blank"><i class="fa-brands fa-linkedin fa-lg"></i></a></li>
+      {%- endif -%}
+      <li><a href="{{ "/feed.xml" | relative_url }}"><i class="fa-solid fa-rss"></i></a></li>
+    </ul>
+
+    {%- assign default_paths = site.pages | map: "path" -%}
+    {%- assign page_paths = site.header_pages | default: default_paths -%}
+    {%- if page_paths -%}
+    <nav class="site-nav">
+      {%- if page.url == '/' -%} 
+        <a class="page-link active" href="/">Home</a>
+      {%- else -%}
+        <a class="page-link" href="/">Home</a>
+      {%- endif -%}
+      {%- for path in page_paths -%}
+        {%- assign my_page = site.pages | where: "path", path | first -%}
+        {%- if my_page.title -%}
+          {%- if page.url == my_page.url -%}
+            <a class="page-link active" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
+          {%- else -%}
+            <a class="page-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </nav>
+    {%- endif -%}
+
+</aside>

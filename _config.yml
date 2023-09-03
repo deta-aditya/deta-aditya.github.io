@@ -21,15 +21,23 @@
 title: Deta Aditya
 email: muhammaddetaaditya@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Software engineer, the one who loves coding and learning new things.
+  Software engineer who loves coding, learning new things, and One Piece.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  deta-aditya
+instagram_username: detaditya
+linkedin_username: deta-aditya
 
 # Build settings
 theme: minima
 plugins:
   - jekyll-feed
+
+defaults:
+  - scope:
+      path: "assets/img"
+    values:
+      image: true
 
 # Exclude from processing.
 # The following items will not be processed, by default.
