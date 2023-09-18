@@ -5,7 +5,8 @@
 
 body {
   background-image: url('https://picsum.photos/1440/1024');
-  background-size: cover;
+  background-size: 100vw;
+  background-attachment: fixed;
 }
 
 .container {
