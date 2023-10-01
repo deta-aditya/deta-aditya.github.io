@@ -4,10 +4,11 @@ title: "The First Launching"
 date: 2023-09-03 20:00:00 +0700
 categories: meta
 tags: updates
+banner: "/assets/img/posts/2023-09-03-the-first-launching.png"
 ---
 
 <figure class="post-banner">
-  <img src="{{site.url}}/assets/img/posts/2023-09-03-the-first-launching.png" alt="The First Launching"/>
+  <img src="{{ site.url }}{{ page.banner }}" alt="{{ page.title }}">
   <figcaption>This website at the time of its first launch</figcaption>
 </figure>
 

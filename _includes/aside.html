@@ -1,4 +1,5 @@
 <aside class="sidebar">
+  <div class="sticky-container">
     <img src="/assets/img/profile.jpg" alt="avatar" class="avatar" />
     <a class="site-title" rel="author" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a>
     <p class="site-description">{{- site.description | escape -}}</p>
@@ -40,5 +41,6 @@
       {%- endfor -%}
     </nav>
     {%- endif -%}
+  </div>
 
 </aside>
