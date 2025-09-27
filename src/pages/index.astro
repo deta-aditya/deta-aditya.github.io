@@ -5,5 +5,10 @@ import BaseLayout from '../layouts/Base.astro';
 <BaseLayout>
 	<h1 class="text-4xl font-bold mb-5">Welcome!</h1>
 	<p>I'm Deta, a <b>software engineer</b> with 8 years of full-stack experience in TypeScript, JavaScript, Go, and PHP. <br />I'm also a functional programming and clean architecture enthusiast.</p>
-	<button class="bg-linear-to-t from-teal-600 to-teal-700 hover:from-teal-400 hover:to-teal-500 text-white py-2 px-5 mt-8 cursor-pointer rounded">Download my CV</button>
+	<button 
+		class="bg-linear-to-t from-teal-600 to-teal-700 hover:from-teal-400 hover:to-teal-500 text-white py-2 px-5 mt-8 cursor-pointer rounded" 
+		onclick="window.open('https://drive.google.com/file/d/1_EQLJ8oH2KjeE3BQVuoUkWtee3wiKT8n/view?usp=sharing')"
+	>
+		Download my CV
+	</button>
 </BaseLayout>
