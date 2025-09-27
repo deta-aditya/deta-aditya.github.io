@@ -1,0 +1,13 @@
+---
+import classNames from 'classnames';
+
+const { href } = Astro.props;
+const { pathname } = Astro.url;
+const isActive = pathname === href || pathname.startsWith(href + '/');
+---
+
+<li class="mb-4 text-md">
+  <a href={href} class={classNames({ 'font-bold': isActive, 'text-teal-500': !isActive, 'hover:underline': !isActive })}>
+    <slot />
+  </a>
+</li>
