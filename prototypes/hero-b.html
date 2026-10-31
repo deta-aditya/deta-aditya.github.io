@@ -1,0 +1,760 @@
+<title>Deta Aditya Field Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=block">
+<style>
+/* =====================================================================
+   DESIGN TOKENS  (prototype B: utopian scholastic)
+   Layout: a black masthead, then one white page. The title sits in the
+   middle of a loose collage of specimens that has no panel or border,
+   so type and objects share the same white ground. A quiet specimen
+   label and links run along the bottom.
+   Idea: every stage is a plate with its own set of specimens and its
+   own color. The last plate gathers the best of all three.
+   Type: Cinzel for the Roman capitals (masthead, title), EB Garamond
+   for everything that reads as text.
+   ===================================================================== */
+:root {
+  /* page */
+  --paper: #FFFFFF;
+  --ink: #10151C;
+  --ink-2: #4B5560;
+  --shadow: #DCE0E4;
+
+  /* plate colors, one per layer */
+  --c-ui: #2F8CFF;
+  --c-srv: #E4513A;
+  --c-ai: #FFC93C;
+  --c-leaf: #2FAE6A;
+  --c-fn: #8B5CF6;
+  --c-ar: #D8409D;
+
+  /* type */
+  --font-caps: "Cinzel", "Trajan Pro", "Cormorant SC", "Palatino Linotype", Georgia, serif;
+  --font-text: "EB Garamond", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --fs-mast: clamp(1.05rem, 2.7vw, 2.1rem);
+  --fs-role: clamp(0.62rem, 1.5vw, 1.15rem);
+  --fs-body: clamp(1.02rem, 1.4vw, 1.18rem);
+  --fs-label: 0.8rem;
+
+  /* space */
+  --gutter: clamp(1rem, 4vw, 3.5rem);
+  --space-2: 1rem;
+  --space-3: clamp(1.25rem, 3vw, 2.25rem);
+
+  /* motion */
+  --ease: cubic-bezier(0.16, 0.84, 0.24, 1);
+}
+
+/* Registered so the plate color can interpolate between stages. */
+@property --accent { syntax: "<color>"; inherits: true; initial-value: #2FAE6A; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); }
+::selection { background: var(--ink); color: var(--paper); }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* =====================================================================
+   HERO FRAME
+   ===================================================================== */
+.hero {
+  --pad-l: max(var(--gutter), env(safe-area-inset-left, 0px));
+  --pad-r: max(var(--gutter), env(safe-area-inset-right, 0px));
+  --accent: var(--c-leaf);
+  position: relative;
+  background: var(--paper);
+  transition: --accent 600ms var(--ease);
+}
+.hero[data-stage="frontend"]  { --accent: var(--c-ui); }
+.hero[data-stage="backend"]   { --accent: var(--c-srv); }
+.hero[data-stage="ai-native"] { --accent: var(--c-ai); }
+.hero[data-stage="functional"]   { --accent: var(--c-fn); }
+.hero[data-stage="architecture"] { --accent: var(--c-ar); }
+.hero[data-stage="fullstack"] { --accent: var(--c-leaf); }
+
+/* ---------------- masthead ---------------- */
+.mast {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem var(--pad-r) 0.8rem var(--pad-l);
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-caps);
+}
+.mast__name { margin: 0; font-size: var(--fs-mast); line-height: 1.1; letter-spacing: 0.05em; text-transform: uppercase; }
+.mast__first { font-weight: 900; }
+.mast__last { font-weight: 400; margin-left: 0.4em; }
+.mast__mark { display: block; width: clamp(1.6rem, 3.4vw, 2.5rem); height: auto; }
+.mast { position: relative; z-index: 30; grid-template-columns: auto 1fr auto; padding-block: 0.7rem; align-items: center; }
+.mast__name { font-size: clamp(1.05rem, 2.4vw, 1.6rem); line-height: 1.5; white-space: nowrap; }
+.nav { display: flex; gap: clamp(1rem, 2.4vw, 2.2rem); justify-self: center; overflow-x: auto; scrollbar-width: none; }
+.nav a { font-size: clamp(0.62rem, 1.1vw, 0.85rem); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; text-decoration: none; line-height: 1.5; color: rgba(255,255,255,.7); padding-block: 0.4rem; border-bottom: 2px solid transparent; white-space: nowrap; }
+.nav a:hover { color: #fff; }
+.nav a[aria-current="page"] { color: #fff; border-bottom-color: var(--accent, #fff); }
+.nav a[aria-disabled="true"] { opacity: 0.45; cursor: default; }
+.hirewrap { position: relative; justify-self: end; }
+.hire { background: transparent; border: 1px solid rgba(255,255,255,.85); padding: 0.55em 1.1em; font: 600 clamp(0.62rem, 1.3vw, 0.9rem)/1 var(--font-caps); letter-spacing: 0.12em; text-transform: uppercase; color: #fff; cursor: pointer; transition: background-color .2s, color .2s; white-space: nowrap; }
+.hire:hover, .hire[aria-expanded="true"] { background: #fff; color: #11161d; }
+.pop { position: absolute; right: 0; top: calc(100% + 0.7rem); width: min(22rem, calc(100vw - 32px)); background: #fff; color: #11161d; border: 1px solid #11161d; padding: 1.1rem 1.2rem 1.2rem; font-family: var(--font-text); font-size: 1.05rem; line-height: 1.5; letter-spacing: 0; text-transform: none; text-align: left; box-shadow: 0 0.8rem 2rem rgba(0,0,0,.25); }
+.pop[hidden] { display: none; }
+.pop h2 { margin: 0 0 0.6rem; font: 600 0.75rem/1.2 var(--font-caps); letter-spacing: 0.22em; text-transform: uppercase; color: #5b6470; }
+.pop p { margin: 0 0 0.4rem; overflow-wrap: anywhere; }
+.pop .email { font-size: 1.2rem; user-select: all; }
+.pop__row { display: flex; align-items: center; gap: 1rem; margin-top: 0.8rem; flex-wrap: wrap; }
+.pop a { color: #11161d; }
+.copy { font: 600 0.72rem/1 var(--font-caps); letter-spacing: 0.14em; text-transform: uppercase; padding: 0.7em 1.1em; background: transparent; color: #11161d; border: 1px solid #11161d; cursor: pointer; }
+.copy:hover { background: #11161d; color: #fff; }
+.cvlink { margin-top: 0.8rem; display: flex; justify-content: center; padding: 0.75em 1em; border: 1px solid #11161d; color: #11161d !important; text-decoration: none; font: 700 0.8rem/1 var(--font-caps); letter-spacing: 0.14em; text-transform: uppercase; }
+.cvlink:hover { background: #11161d; color: #fff !important; }
+
+/* thin plate-color band: one color per plate, all six once assembled */
+.band { position: relative; height: 0.5rem; background: var(--accent); }
+.band::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--c-ui) 0 16.667%, var(--c-srv) 16.667% 33.333%, var(--c-ai) 33.333% 50%, var(--c-fn) 50% 66.667%, var(--c-ar) 66.667% 83.333%, var(--c-leaf) 83.333% 100%);
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.hero[data-stage="fullstack"] .band::after { opacity: 1; }
+
+/* stage navigation: after the intro the band becomes six clickable segments */
+.band { z-index: 5; }
+.band.is-nav { display: flex; }
+.band.is-nav::after { display: none; }
+.band.is-nav { background: var(--paper); }
+.band:not(.is-nav) .band__seg { display: none; }
+.band__seg {
+  position: relative; flex: 1 1 0; height: 100%; padding: 0; margin: 0;
+  border: 0; border-radius: 0; background: var(--c); cursor: pointer;
+  opacity: 0.4; transition: opacity 250ms ease;
+}
+.band__seg::before { content: ""; position: absolute; inset: -8px 0; } /* bigger hit area */
+.band__seg[aria-current="true"],
+.band__seg:hover,
+.band__seg:focus-visible,
+.hero[data-stage="fullstack"] .band__seg { opacity: 1; }
+.band__seg:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+.band__seg::after {
+  content: attr(data-label);
+  position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(-50%);
+  white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 150ms ease;
+  font: 600 0.7rem/1 var(--font-caps); letter-spacing: 0.12em; text-transform: uppercase;
+  color: #fff; background: #11161d; padding: 0.45rem 0.6rem;
+}
+.band__seg:hover::after, .band__seg:focus-visible::after { opacity: 1; }
+@media (hover: none) { .band__seg::after { display: none; } }
+
+/* ---------------- plate: collage + title ---------------- */
+.plate {
+  position: relative;
+  aspect-ratio: 2 / 1;
+  width: min(100%, 1600px, calc((100svh - 6rem) * 2));
+  min-width: min(100%, 44rem);
+  margin-inline: auto;
+  container-type: size;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.s {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--w) * 1cqmin);
+  height: auto;
+  --x: var(--lx); --y: var(--ly); --w: var(--lw); --r: var(--lr);
+  --fx: var(--lfx); --fy: var(--lfy); --fw: var(--lfw); --fr: var(--lfr);
+  --z: var(--lz); --fz: var(--lfz); z-index: var(--z);
+  overflow: visible;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0.2rem 0.45rem 0.4rem rgba(16, 21, 28, 0.2));
+  transform: translate(-50%, -50%) rotate(var(--r)) scale(0.86);
+  /* Leaving: no stagger, quick fade. Every leaver is fully invisible
+     after --out (350ms). Arriving specimens (rules below) wait --gate
+     (500ms) before their own stagger, so a new stage never shows
+     anything until the previous stage is completely gone. */
+  --out: 350ms; --gate: 500ms;
+  transition:
+    left 900ms var(--ease), top 900ms var(--ease), width 900ms var(--ease),
+    transform 900ms var(--ease), opacity var(--out) ease;
+  transition-delay: 0ms;
+}
+.s.p-only { display: none; }
+.hero[data-stage="frontend"] .s--fe,
+.hero[data-stage="backend"] .s--be,
+.hero[data-stage="ai-native"] .s--ai,
+.hero[data-stage="functional"] .s--fn,
+.hero[data-stage="architecture"] .s--ar {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(var(--r)) scale(1);
+}
+.hero[data-stage="frontend"] .s--fe,
+.hero[data-stage="backend"] .s--be,
+.hero[data-stage="ai-native"] .s--ai,
+.hero[data-stage="functional"] .s--fn,
+.hero[data-stage="architecture"] .s--ar {
+  transition-duration: 900ms, 900ms, 900ms, 900ms, 500ms;
+  transition-delay: calc(var(--gate) + var(--k) * 12ms);
+}
+.hero[data-stage="fullstack"] .s.fs {
+  transition-duration: 900ms, 900ms, 900ms, 900ms, 500ms;
+  transition-delay: calc(var(--gate) + var(--kf) * 12ms);
+}
+.hero[data-stage="fullstack"] .s.fs {
+  left: var(--fx);
+  top: var(--fy);
+  width: calc(var(--fw) * 1cqmin);
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(var(--fr)) scale(1);
+  z-index: var(--fz);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-content: center start;
+  justify-items: start;
+  padding: 0 var(--pad-r) 0 var(--pad-l);
+  text-align: left;
+  pointer-events: none;
+}
+.title {
+  margin: 0;
+  font-family: var(--font-caps);
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.stage { display: grid; justify-items: start; font-size: min(7.4cqw, 15cqh); min-height: 1.7em; }
+.word {
+  display: block;
+  white-space: nowrap;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-shadow: 0.03em 0.04em 0 color-mix(in srgb, var(--accent) 36%, var(--shadow));
+}
+.word__in { display: inline-block; font-size: calc(1em * var(--fit, 1)); animation: ink-in 900ms var(--ease) both; }
+.tail {
+  display: block;
+  margin-top: 0.02em;
+  font-size: 0.56em;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.07em;
+  text-shadow: 0.04em 0.05em 0 color-mix(in srgb, var(--accent) 36%, var(--shadow));
+}
+.caption {
+  margin: 1.1rem 0 0;
+  max-width: 42cqw;
+  min-height: 3.4em;
+  font-family: var(--font-text);
+  font-size: 3.1cqmin;
+  font-weight: 500;
+  line-height: 1.75;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.caption span { display: block; text-wrap: balance; animation: fade 700ms var(--ease) both; }
+
+/* ---------------- specimen label and links ---------------- */
+.base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2) 2rem;
+  padding: var(--space-2) var(--pad-r) var(--space-3) var(--pad-l);
+}
+.spec { display: flex; flex-wrap: wrap; gap: 0.6rem 2.5rem; margin: 0; }
+.spec div { min-width: 0; }
+.spec dt {
+  margin: 0 0 0.2rem;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.spec dd { margin: 0; font-size: var(--fs-body); font-weight: 500; line-height: 1.3; }
+
+.links { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1.6rem; }
+.links a {
+  color: var(--ink);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  font-style: italic;
+  text-decoration: underline;
+  text-decoration-color: var(--c-leaf);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+.links a:hover { text-decoration-color: var(--ink); }
+#replay {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font: 600 var(--fs-label)/1.2 var(--font-text);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+}
+#replay:hover { color: var(--ink); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--c-ui); outline-offset: 3px; }
+
+/* ---------------- title exit ---------------- */
+.tail__in { display: inline-block; animation: ink-in 900ms var(--ease) 140ms both; }
+.hero.is-leaving .word__in { animation: ink-out 350ms ease-in both; }
+.hero.is-leaving .tail__in { animation: ink-out 350ms ease-in both; }
+.hero.is-leaving .caption span { animation: fade-out 300ms ease-in both; }
+
+/* ---------------- keyframes ---------------- */
+@keyframes fade-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-0.4rem); } }
+@keyframes ink-out {
+  from { clip-path: inset(-0.1em -0.1em -0.2em 0); opacity: 1; }
+  to   { clip-path: inset(-0.1em -0.1em -0.2em 100%); opacity: 0.2; }
+}
+@keyframes fade { from { opacity: 0; transform: translateY(0.4rem); } to { opacity: 1; transform: none; } }
+@keyframes ink-in {
+  from { clip-path: inset(-0.1em 100% -0.2em 0); opacity: 0.2; }
+  to   { clip-path: inset(-0.1em -0.1em -0.2em 0); opacity: 1; }
+}
+
+/* ---------------- narrow screens ---------------- */
+@media (max-width: 700px) {
+  .plate { aspect-ratio: 100 / 128; width: min(100%, 32rem); min-width: 0; }
+  .s { --x: var(--px); --y: var(--py); --w: var(--pw); --r: var(--pr);
+       --fx: var(--pfx); --fy: var(--pfy); --fw: var(--pfw); --fr: var(--pfr);
+       --z: var(--pz); --fz: var(--pfz); }
+  .s.no-p, .s.l-only { display: none; }
+  .s.p-only { display: block; }
+  /* No fullstack spot on phones: fade out in place. Without the pinned geometry the
+     undefined --fx/--fy/--fw/--fr make left/top/width/transform fall back to defaults
+     and the specimen jumps to the top-left corner while it fades. */
+  .hero[data-stage="fullstack"] .s.fs.nfs-p {
+    left: var(--x); top: var(--y); width: calc(var(--w) * 1cqmin);
+    transform: translate(-50%, -50%) rotate(var(--r)) scale(1); z-index: var(--z);
+    opacity: 0; transition-delay: 0ms; transition-duration: 900ms, 900ms, 900ms, 900ms, var(--out);
+  }
+  .overlay { place-content: start; padding-top: 7cqw; }
+  .stage { font-size: min(12.2cqw, 17cqh); }
+  .caption { font-size: 3.9cqmin; max-width: 86cqw; }
+  .mast { grid-template-columns: 1fr auto; row-gap: 0.4rem; }
+  .mast__mark { display: none; }
+  .nav { grid-column: 1 / -1; grid-row: 2; justify-self: stretch; justify-content: flex-start; margin: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<linearGradient id="gBrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBEBB0"/><stop offset=".42" stop-color="#D8A944"/><stop offset="1" stop-color="#8D5F1E"/></linearGradient>
+<linearGradient id="gBrassV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7DE8E"/><stop offset=".5" stop-color="#C99634"/><stop offset="1" stop-color="#8A5C1B"/></linearGradient>
+<linearGradient id="gSteel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6F8FA"/><stop offset=".5" stop-color="#B0BAC3"/><stop offset="1" stop-color="#68747F"/></linearGradient>
+<linearGradient id="gSteelDark" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2C3239"/><stop offset=".45" stop-color="#6E7983"/><stop offset="1" stop-color="#242A30"/></linearGradient>
+<linearGradient id="gWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7BB84"/><stop offset="1" stop-color="#A56E38"/></linearGradient>
+<linearGradient id="gWoodDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A8723A"/><stop offset="1" stop-color="#5E3A1A"/></linearGradient>
+<radialGradient id="gGlass" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".92"/><stop offset=".5" stop-color="#CFE9FF" stop-opacity=".5"/><stop offset="1" stop-color="#7FB6E8" stop-opacity=".38"/></radialGradient>
+<radialGradient id="gSclera" cx=".5" cy=".5" r=".6"><stop offset=".55" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EBBDB2"/></radialGradient>
+<radialGradient id="gIris" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#2A2412"/><stop offset=".35" stop-color="#7C9A3A"/><stop offset=".8" stop-color="#3F7F55"/><stop offset="1" stop-color="#1D4A38"/></radialGradient>
+<radialGradient id="gSG" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#D4F9BC"/><stop offset=".55" stop-color="#34B25A"/><stop offset="1" stop-color="#0E6B34"/></radialGradient>
+<radialGradient id="gSB" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#C6E4FF"/><stop offset=".55" stop-color="#2F7FE0"/><stop offset="1" stop-color="#123F8E"/></radialGradient>
+<radialGradient id="gSR" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFD2C8"/><stop offset=".55" stop-color="#E4513A"/><stop offset="1" stop-color="#8E1F12"/></radialGradient>
+<radialGradient id="gSoma" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#F8DCE8"/><stop offset=".6" stop-color="#D98AB2"/><stop offset="1" stop-color="#A24A7C"/></radialGradient>
+<radialGradient id="gPlasma" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#C77A0C"/><stop offset=".55" stop-color="#5A2F06"/><stop offset="1" stop-color="#140A02"/></radialGradient>
+<radialGradient id="gCore" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#FFE08A"/><stop offset="1" stop-color="#E08A10" stop-opacity="0"/></radialGradient>
+<radialGradient id="gOcean" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#9BD6FA"/><stop offset=".6" stop-color="#3F95DE"/><stop offset="1" stop-color="#1F5FAE"/></radialGradient>
+<radialGradient id="gLand" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#9CD36B"/><stop offset="1" stop-color="#4C9A45"/></radialGradient>
+<radialGradient id="gDial" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#FFFDF4"/><stop offset="1" stop-color="#EDE3C6"/></radialGradient>
+<radialGradient id="gBead" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#F29A8C"/><stop offset=".5" stop-color="#B3362B"/><stop offset="1" stop-color="#5E140E"/></radialGradient>
+<linearGradient id="gParch" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7EBCB"/><stop offset="1" stop-color="#E0C994"/></linearGradient>
+<linearGradient id="gCrysL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9DB6EE"/><stop offset="1" stop-color="#6F8BD2"/></linearGradient>
+<linearGradient id="gCrysR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#EAF3FF"/><stop offset="1" stop-color="#B6D0F7"/></linearGradient>
+<linearGradient id="gMorpho" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8BE9FF"/><stop offset=".5" stop-color="#2A78E8"/><stop offset="1" stop-color="#0C2C7E"/></linearGradient>
+<radialGradient id="gShell" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#FFF1D8"/><stop offset=".6" stop-color="#F0C48C"/><stop offset="1" stop-color="#D98A45"/></radialGradient>
+<linearGradient id="gHoney" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE08A"/><stop offset="1" stop-color="#E69A1E"/></linearGradient>
+<linearGradient id="gCover" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7B2420"/><stop offset=".15" stop-color="#A8382F"/><stop offset="1" stop-color="#8E2B26"/></linearGradient>
+<filter id="fGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+
+<linearGradient id="gBlueRing" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9CCBFF"/><stop offset=".45" stop-color="#2F7DE8"/><stop offset="1" stop-color="#123C8C"/></linearGradient>
+<linearGradient id="gNavy" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2A4A8C"/><stop offset=".5" stop-color="#16264A"/><stop offset="1" stop-color="#0B1530"/></linearGradient>
+<radialGradient id="gVig" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="#3F7FE0" stop-opacity="0"/><stop offset="1" stop-color="#1F4FA8" stop-opacity=".24"/></radialGradient>
+<linearGradient id="gRule" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F8E8BC"/><stop offset="1" stop-color="#E0C07A"/></linearGradient>
+<linearGradient id="gBrushH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6FB0FF"/><stop offset=".5" stop-color="#2F7DE8"/><stop offset="1" stop-color="#15408F"/></linearGradient>
+<linearGradient id="gBristle" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0D3A0"/><stop offset="1" stop-color="#B07E42"/></linearGradient>
+
+<linearGradient id="gBeige" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3EAD2"/><stop offset=".6" stop-color="#E0D3AE"/><stop offset="1" stop-color="#C9B98F"/></linearGradient>
+<linearGradient id="gBeigeH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9B98F"/><stop offset=".5" stop-color="#EADFC0"/><stop offset="1" stop-color="#BBAA7E"/></linearGradient>
+<linearGradient id="gShot" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9CCBFF"/><stop offset="1" stop-color="#2F7DE8"/></linearGradient>
+<radialGradient id="gScreenVig" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#0B1E4A" stop-opacity="0"/><stop offset="1" stop-color="#0B1E4A" stop-opacity=".30"/></radialGradient>
+
+<linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE9A0"/><stop offset="1" stop-color="#E8B83A"/></linearGradient>
+<linearGradient id="gCursor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#B9CBEA"/></linearGradient>
+
+<linearGradient id="gFossil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EBD7AE"/><stop offset=".55" stop-color="#C79B62"/><stop offset="1" stop-color="#8A5F33"/></linearGradient>
+<linearGradient id="gFeather" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B9ECE4"/><stop offset=".5" stop-color="#4FB3C4"/><stop offset="1" stop-color="#1F6C94"/></linearGradient>
+<radialGradient id="gBeetle" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#D6F7A8"/><stop offset=".45" stop-color="#2FAE6A"/><stop offset="1" stop-color="#0A4A3C"/></radialGradient>
+<radialGradient id="gStar" cx=".5" cy=".45" r=".7"><stop offset="0" stop-color="#FFD9B8"/><stop offset=".6" stop-color="#F2894F"/><stop offset="1" stop-color="#C8512B"/></radialGradient>
+<linearGradient id="gLeaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B7E48A"/><stop offset="1" stop-color="#3C9A4A"/></linearGradient>
+
+<linearGradient id="gRed" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F27A62"/><stop offset=".12" stop-color="#E4513A"/><stop offset=".7" stop-color="#C23C28"/><stop offset="1" stop-color="#8E2616"/></linearGradient>
+<linearGradient id="gRedTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F58B74"/><stop offset="1" stop-color="#C23C28"/></linearGradient>
+<radialGradient id="gSea" cx=".38" cy=".32" r=".85"><stop offset="0" stop-color="#B4EDD0"/><stop offset=".55" stop-color="#3FBF84"/><stop offset="1" stop-color="#15703F"/></radialGradient>
+<linearGradient id="gSand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBEFC0"/><stop offset="1" stop-color="#D4A650"/></linearGradient>
+
+<radialGradient id="gFViolet" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#D9C2FF"/><stop offset=".5" stop-color="#8B5CF6"/><stop offset="1" stop-color="#3C1F8C"/></radialGradient>
+<radialGradient id="gFLilac" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#C7A8FA"/><stop offset="1" stop-color="#7A4FCB"/></radialGradient>
+<linearGradient id="gFBone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E8DFC8"/></linearGradient>
+<linearGradient id="gFPawn" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8B6BC8"/><stop offset=".45" stop-color="#4A2F86"/><stop offset="1" stop-color="#241446"/></linearGradient>
+<radialGradient id="gFBall" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#B8C2CC"/><stop offset="1" stop-color="#5A6673"/></radialGradient>
+
+<linearGradient id="gAStone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF6E8"/><stop offset="1" stop-color="#DCCFB0"/></linearGradient>
+<linearGradient id="gAStoneH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFBF0"/><stop offset=".55" stop-color="#EADFC4"/><stop offset="1" stop-color="#C4B48E"/></linearGradient>
+<radialGradient id="gAPatina" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#FBC4DF"/><stop offset=".5" stop-color="#DD52A5"/><stop offset="1" stop-color="#8A2063"/></radialGradient>
+<linearGradient id="gABrick" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E98F66"/><stop offset="1" stop-color="#B14E2C"/></linearGradient>
+<linearGradient id="gABlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E9AAE"/><stop offset="1" stop-color="#0F5E70"/></linearGradient>
+<g id="sp-eye"><image href="img/eye.webp" x="0" y="0" width="220" height="118" preserveAspectRatio="none"/></g><g id="sp-prism"><image href="img/prism.webp" x="0" y="0" width="260" height="128" preserveAspectRatio="none"/></g><g id="sp-fan"><image href="img/fan.webp" x="0" y="0" width="160" height="132" preserveAspectRatio="none"/></g><g id="sp-magnifier">
+<path d="M101 102L142 175" stroke="#4E2C12" stroke-width="15" stroke-linecap="round"/>
+<path d="M104 104L143 173" stroke="#A8703A" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+<path d="M98 97L110 118" stroke="url(#gBrassV)" stroke-width="17" stroke-linecap="round"/>
+<circle cx="70" cy="70" r="52" fill="url(#gGlass)" stroke="url(#gBrass)" stroke-width="10"/>
+<circle cx="70" cy="70" r="57" fill="none" stroke="#7B5218" stroke-width="1.2" opacity=".6"/>
+<path d="M38 56A36 36 0 0 1 62 36" stroke="#fff" stroke-width="5" opacity=".85" fill="none" stroke-linecap="round"/>
+</g><g id="sp-pencil"><image href="img/pencil.webp" x="0" y="0" width="300" height="17" preserveAspectRatio="none"/></g><g id="sp-palette"><image href="img/palette.webp" x="0" y="0" width="220" height="138" preserveAspectRatio="none"/></g><g id="sp-typeblock"><image href="img/typeblock.webp" x="0" y="0" width="110" height="131" preserveAspectRatio="none"/></g><g id="sp-gears"><image href="img/gears.webp" x="0" y="0" width="240" height="165" preserveAspectRatio="none"/></g><g id="sp-key"><image href="img/key.webp" x="0" y="0" width="280" height="96" preserveAspectRatio="none"/></g><g id="sp-padlock"><image href="img/padlock.webp" x="0" y="0" width="130" height="201" preserveAspectRatio="none"/></g><g id="sp-abacus"><image href="img/abacus.webp" x="0" y="0" width="240" height="143" preserveAspectRatio="none"/></g><g id="sp-watch"><image href="img/watch.webp" x="0" y="0" width="150" height="199" preserveAspectRatio="none"/></g><g id="sp-card"><image href="img/card.webp" x="0" y="0" width="220" height="99" preserveAspectRatio="none"/></g><g id="sp-coins"><image href="img/coins.webp" x="0" y="0" width="120" height="135" preserveAspectRatio="none"/></g><g id="sp-ledger"><image href="img/ledger.webp" x="0" y="0" width="150" height="201" preserveAspectRatio="none"/></g><g id="sp-neuron"><image href="img/neuron.webp" x="0" y="0" width="280" height="187" preserveAspectRatio="none"/></g><g id="sp-plasma"><image href="img/plasma.webp" x="0" y="0" width="200" height="281" preserveAspectRatio="none"/></g><g id="sp-crystal"><image href="img/crystal.webp" x="0" y="0" width="200" height="198" preserveAspectRatio="none"/></g><g id="sp-molecule"><image href="img/molecule.webp" x="0" y="0" width="190" height="191" preserveAspectRatio="none"/></g><g id="sp-butterfly"><image href="img/butterfly.webp" x="0" y="0" width="248" height="155" preserveAspectRatio="none"/></g><g id="sp-nautilus"><image href="img/nautilus.webp" x="0" y="0" width="220" height="187" preserveAspectRatio="none"/></g><g id="sp-tree"><image href="img/tree.webp" x="0" y="0" width="240" height="148" preserveAspectRatio="none"/></g><g id="sp-honey"><image href="img/honey.webp" x="0" y="0" width="180" height="147" preserveAspectRatio="none"/></g><g id="sp-world">
+<defs><clipPath id="cpWorld"><ellipse cx="120" cy="65" rx="116" ry="61"/></clipPath></defs>
+<ellipse cx="120" cy="65" rx="116" ry="61" fill="url(#gOcean)"/>
+<g clip-path="url(#cpWorld)" fill="url(#gLand)" stroke="#2F6E34" stroke-width="1.2" stroke-linejoin="round">
+<path d="M32 30C48 14 80 16 92 28C100 38 90 48 80 52C74 62 62 66 56 60C46 52 30 46 32 30Z"/>
+<path d="M72 70C86 66 98 76 96 90C94 104 84 116 78 112C70 100 62 84 72 70Z"/>
+<path d="M118 28C132 22 146 28 148 40C158 48 154 62 146 72C140 88 130 104 124 100C116 90 118 70 108 58C104 44 108 34 118 28Z"/>
+<path d="M150 24C176 14 208 22 214 40C216 54 200 62 184 60C170 58 160 52 152 40Z"/>
+<path d="M184 86C196 80 210 86 208 98C204 108 190 108 184 98Z"/>
+</g>
+<ellipse cx="120" cy="65" rx="30" ry="61" fill="none" stroke="#fff" stroke-width="1" opacity=".35"/><ellipse cx="120" cy="65" rx="62" ry="61" fill="none" stroke="#fff" stroke-width="1" opacity=".35"/><ellipse cx="120" cy="65" rx="92" ry="61" fill="none" stroke="#fff" stroke-width="1" opacity=".35"/><line x1="4" y1="65" x2="236" y2="65" stroke="#fff" stroke-width="1" opacity=".35"/>
+<ellipse cx="120" cy="65" rx="116" ry="61" fill="none" stroke="#1F5FAE" stroke-width="2"/>
+<ellipse cx="82" cy="34" rx="40" ry="12" fill="#fff" opacity=".22" transform="rotate(-12 82 34)"/>
+</g><g id="sp-compass"><image href="img/compass.webp" x="0" y="0" width="170" height="173" preserveAspectRatio="none"/></g><g id="sp-lens">
+<clipPath id="lensClip"><circle cx="95" cy="95" r="80"/></clipPath>
+<path d="M142 148L172 232" stroke="#0B1530" stroke-width="20" stroke-linecap="round"/>
+<path d="M142 148L172 232" stroke="url(#gNavy)" stroke-width="17" stroke-linecap="round"/>
+<path d="M139 152L165 226" stroke="#6C8FD8" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+<path d="M134 134L152 176" stroke="url(#gBlueRing)" stroke-width="22" stroke-linecap="round"/>
+<circle cx="95" cy="95" r="80" fill="#fff"/>
+<g clip-path="url(#lensClip)"><rect x="32" y="32" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="32" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="32" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="32" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="32" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="32" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="32" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="32" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="32" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="32" y="46" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="46" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="46" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="46" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="46" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="46" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="46" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="46" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="46" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="32" y="60" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="60" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="60" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="60" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="60" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="60" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="60" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="60" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="60" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="32" y="74" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="74" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="74" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="74" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="74" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="74" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="74" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="74" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="74" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="32" y="88" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="88" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="88" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="88" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="88" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="88" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="88" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="88" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="88" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="32" y="102" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="102" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="102" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="102" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="102" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="102" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="102" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="102" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="102" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="32" y="116" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="116" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="116" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="116" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="116" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="116" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="116" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="116" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="116" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="32" y="130" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="130" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="130" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="130" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="130" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="130" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="130" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="130" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="130" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="32" y="144" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="46" y="144" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="60" y="144" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="74" y="144" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="88" y="144" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="102" y="144" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="116" y="144" width="14" height="14" fill="#E6EEFB" stroke="#D3E0F6" stroke-width=".7"/><rect x="130" y="144" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><rect x="144" y="144" width="14" height="14" fill="#10151C" stroke="#D3E0F6" stroke-width=".7"/><circle cx="95" cy="95" r="80" fill="url(#gVig)"/></g>
+<circle cx="95" cy="95" r="85" fill="none" stroke="url(#gBlueRing)" stroke-width="12"/>
+<circle cx="95" cy="95" r="91.5" fill="none" stroke="#163F91" stroke-width="1.2" opacity=".7"/>
+<circle cx="95" cy="95" r="78.5" fill="none" stroke="#0E2E70" stroke-width="1.2" opacity=".6"/>
+<path d="M40 64A62 62 0 0 1 80 32" stroke="#fff" stroke-width="6" opacity=".8" fill="none" stroke-linecap="round"/>
+</g><g id="sp-ruler"><image href="img/ruler.webp" x="0" y="0" width="320" height="25" preserveAspectRatio="none"/></g><g id="sp-brush"><image href="img/brush.webp" x="0" y="0" width="320" height="17" preserveAspectRatio="none"/></g><g id="sp-typeblock2"><image href="img/typeblock2.webp" x="0" y="0" width="110" height="135" preserveAspectRatio="none"/></g><g id="sp-monitor"><image href="img/monitor.webp" x="0" y="0" width="260" height="247" preserveAspectRatio="none"/></g><g id="sp-typeblock3"><image href="img/typeblock3.webp" x="0" y="0" width="110" height="138" preserveAspectRatio="none"/></g><g id="sp-typeblock4"><image href="img/typeblock4.webp" x="0" y="0" width="110" height="143" preserveAspectRatio="none"/></g><g id="sp-typeblock5"><image href="img/typeblock5.webp" x="0" y="0" width="110" height="142" preserveAspectRatio="none"/></g><g id="sp-cursor"><image href="img/cursor.webp" x="0" y="0" width="94" height="149" preserveAspectRatio="none"/></g><g id="sp-setsquare"><image href="img/setsquare.webp" x="0" y="0" width="176" height="121" preserveAspectRatio="none"/></g><g id="sp-mainframe"><image href="img/mainframe.webp" x="0" y="0" width="220" height="272" preserveAspectRatio="none"/></g><g id="sp-globe"><image href="img/globe.webp" x="0" y="0" width="220" height="302" preserveAspectRatio="none"/></g><g id="sp-database"><rect x="44" y="30" width="32" height="104" fill="url(#gBrassV)" stroke="#7B5218" stroke-width="1.2"/><path d="M12 100v30a48 14 0 0 0 96 0v-30z" fill="url(#gSteel)" stroke="#4E5A66" stroke-width="1.5"/><ellipse cx="60" cy="100" rx="48" ry="14" fill="#E9EEF2" stroke="#4E5A66" stroke-width="1.5"/><ellipse cx="60" cy="100" rx="36" ry="9.5" fill="none" stroke="#fff" stroke-width="1.2" opacity=".7"/><circle cx="28" cy="122" r="3.4" fill="#34B25A" stroke="#0E6B34" stroke-width=".8"/><circle cx="40" cy="123" r="3.4" fill="#FFC93C" stroke="#9A6E10" stroke-width=".8"/><path d="M62 122h30" stroke="#4E5A66" stroke-width="2.4" stroke-linecap="round"/><path d="M12 62v30a48 14 0 0 0 96 0v-30z" fill="url(#gSteel)" stroke="#4E5A66" stroke-width="1.5"/><ellipse cx="60" cy="62" rx="48" ry="14" fill="#E9EEF2" stroke="#4E5A66" stroke-width="1.5"/><ellipse cx="60" cy="62" rx="36" ry="9.5" fill="none" stroke="#fff" stroke-width="1.2" opacity=".7"/><circle cx="28" cy="84" r="3.4" fill="#34B25A" stroke="#0E6B34" stroke-width=".8"/><circle cx="40" cy="85" r="3.4" fill="#FFC93C" stroke="#9A6E10" stroke-width=".8"/><path d="M62 84h30" stroke="#4E5A66" stroke-width="2.4" stroke-linecap="round"/><path d="M12 24v30a48 14 0 0 0 96 0v-30z" fill="url(#gSteel)" stroke="#4E5A66" stroke-width="1.5"/><ellipse cx="60" cy="24" rx="48" ry="14" fill="#E9EEF2" stroke="#4E5A66" stroke-width="1.5"/><ellipse cx="60" cy="24" rx="36" ry="9.5" fill="none" stroke="#fff" stroke-width="1.2" opacity=".7"/><circle cx="28" cy="46" r="3.4" fill="#34B25A" stroke="#0E6B34" stroke-width=".8"/><circle cx="40" cy="47" r="3.4" fill="#FFC93C" stroke="#9A6E10" stroke-width=".8"/><path d="M62 46h30" stroke="#4E5A66" stroke-width="2.4" stroke-linecap="round"/></g><g id="sp-telegraph"><image href="img/telegraph.webp" x="0" y="0" width="200" height="96" preserveAspectRatio="none"/></g><g id="sp-spool">
+<rect x="26" y="20" width="78" height="92" fill="#8E2B26"/>
+<path d="M26 25H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 22.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M26 34H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 31.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M26 43H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 40.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M26 52H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 49.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M26 61H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 58.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M26 70H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 67.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M26 79H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 76.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M26 88H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 85.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M26 97H104" stroke="#B3362B" stroke-width="8" stroke-linecap="round"/><path d="M30 94.5H100" stroke="#F29A8C" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
+<rect x="8" y="6" width="114" height="17" rx="4" fill="url(#gWood)" stroke="#5E3A1A" stroke-width="1.5"/>
+<rect x="8" y="109" width="114" height="17" rx="4" fill="url(#gWoodDark)" stroke="#3E2410" stroke-width="1.5"/>
+<path d="M104 70C128 70 130 94 112 104" fill="none" stroke="#B3362B" stroke-width="6" stroke-linecap="round"/>
+<path d="M112 104l-6 8" stroke="#E7BB84" stroke-width="4" stroke-linecap="round"/>
+</g><g id="sp-hourglass"><image href="img/hourglass.webp" x="0" y="0" width="110" height="209" preserveAspectRatio="none"/></g><g id="sp-scales"><image href="img/scales.webp" x="0" y="0" width="190" height="180" preserveAspectRatio="none"/></g><g id="sp-vault"><image href="img/vault.webp" x="0" y="0" width="156" height="158" preserveAspectRatio="none"/></g><g id="sp-trilobite"><image href="img/trilobite.webp" x="0" y="0" width="196" height="131" preserveAspectRatio="none"/></g><g id="sp-feather"><image href="img/feather.webp" x="0" y="0" width="222" height="63" preserveAspectRatio="none"/></g><g id="sp-telescope"><image href="img/telescope.webp" x="0" y="0" width="240" height="70" preserveAspectRatio="none"/></g><g id="sp-samara"><image href="img/samara.webp" x="0" y="0" width="150" height="98" preserveAspectRatio="none"/></g><g id="sp-beetle"><image href="img/beetle.webp" x="0" y="0" width="150" height="148" preserveAspectRatio="none"/></g><g id="sp-fern"><image href="img/fern.webp" x="0" y="0" width="120" height="261" preserveAspectRatio="none"/></g><g id="sp-starfish"><image href="img/starfish.webp" x="0" y="0" width="140" height="136" preserveAspectRatio="none"/></g><g id="sp-egg"><image href="img/egg.webp" x="0" y="0" width="240" height="435" preserveAspectRatio="none"/></g><g id="sp-astrolabe"><image href="img/astrolabe.webp" x="0" y="0" width="190" height="224" preserveAspectRatio="none"/></g><g id="sp-sliderule"><image href="img/sliderule.webp" x="0" y="0" width="330" height="65" preserveAspectRatio="none"/></g><g id="sp-dominoes"><image href="img/dominoes.webp" x="0" y="0" width="160" height="110" preserveAspectRatio="none"/></g><g id="sp-dice"><image href="img/dice.webp" x="0" y="0" width="150" height="124" preserveAspectRatio="none"/></g><g id="sp-pawn"><image href="img/pawn.webp" x="0" y="0" width="100" height="174" preserveAspectRatio="none"/></g><g id="sp-tuningfork"><image href="img/tuningfork.webp" x="0" y="0" width="100" height="373" preserveAspectRatio="none"/></g><g id="sp-metronome"><image href="img/metronome.webp" x="0" y="0" width="120" height="233" preserveAspectRatio="none"/></g><g id="sp-newtons"><image href="img/newtons.webp" x="0" y="0" width="200" height="167" preserveAspectRatio="none"/></g><g id="sp-blocklambda"><image href="img/blocklambda.webp" x="0" y="0" width="110" height="144" preserveAspectRatio="none"/></g><g id="sp-blocksigma">
+<polygon points="10,30 90,30 100,18 20,18" fill="#F0CD9C"/>
+<polygon points="90,30 100,18 100,118 90,130" fill="#8A5A2A"/>
+<rect x="10" y="30" width="80" height="100" fill="url(#gWood)"/>
+<rect x="10" y="30" width="80" height="100" fill="none" stroke="#6E4520" stroke-width="1.5"/>
+<path d="M72 44H30L54 80L30 118H74" fill="none" stroke="#1B1B1B" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter"/>
+</g><g id="sp-blockcompose"><image href="img/blockcompose.webp" x="0" y="0" width="110" height="136" preserveAspectRatio="none"/></g><g id="sp-blockarrow">
+<polygon points="10,30 90,30 100,18 20,18" fill="#F0CD9C"/>
+<polygon points="90,30 100,18 100,118 90,130" fill="#8A5A2A"/>
+<rect x="10" y="30" width="80" height="100" fill="url(#gWood)"/>
+<rect x="10" y="30" width="80" height="100" fill="none" stroke="#6E4520" stroke-width="1.5"/>
+<path d="M24 82H76M58 64L76 82L58 100" fill="none" stroke="#1B1B1B" stroke-linecap="round" stroke-linejoin="round" stroke-width="10"/>
+</g><g id="sp-blockpi"><image href="img/blockpi.webp" x="0" y="0" width="110" height="136" preserveAspectRatio="none"/></g><g id="sp-rotunda"><image href="img/rotunda.webp" x="0" y="0" width="260" height="271" preserveAspectRatio="none"/></g><g id="sp-blueprint"><image href="img/blueprint.webp" x="0" y="0" width="240" height="88" preserveAspectRatio="none"/></g><g id="sp-dividers"><image href="img/dividers.webp" x="0" y="0" width="130" height="269" preserveAspectRatio="none"/></g><g id="sp-plumb"><image href="img/plumb.webp" x="0" y="0" width="80" height="537" preserveAspectRatio="none"/></g><g id="sp-spiritlevel"><image href="img/spiritlevel.webp" x="0" y="0" width="290" height="42" preserveAspectRatio="none"/></g><g id="sp-bricks"><image href="img/bricks.webp" x="0" y="0" width="150" height="76" preserveAspectRatio="none"/></g><g id="sp-archstone"><image href="img/archstone.webp" x="0" y="0" width="170" height="104" preserveAspectRatio="none"/></g><g id="sp-ionic"><image href="img/ionic.webp" x="0" y="0" width="160" height="155" preserveAspectRatio="none"/></g><g id="sp-protractor"><image href="img/protractor.webp" x="0" y="0" width="190" height="89" preserveAspectRatio="none"/></g><g id="sp-theodolite"><image href="img/theodolite.webp" x="0" y="0" width="130" height="203" preserveAspectRatio="none"/></g><g id="sp-trowel"><image href="img/trowel.webp" x="0" y="0" width="230" height="60" preserveAspectRatio="none"/></g><g id="sp-tsquare"><image href="img/tsquare.webp" x="0" y="0" width="200" height="123" preserveAspectRatio="none"/></g></defs></svg>
+
+<main>
+  <section class="hero" id="hero" data-stage="fullstack">
+    <header class="mast">
+      <p class="mast__name"><span class="mast__first">Deta</span><span class="mast__last">Aditya</span></p>
+      <nav class="nav" aria-label="Pages">
+        <a href="#home" aria-current="page">Home</a>
+        <a href="https://claude.ai/artifact/DRxo9LdNJW3Jq5XGWHQp3Z">Experience</a>
+        <a href="#projects" aria-disabled="true" title="Coming soon">Projects</a>
+        <a href="#writing" aria-disabled="true" title="Coming soon">Writing</a>
+      </nav>
+      <div class="hirewrap">
+        <button class="hire" id="hire" type="button" aria-expanded="false" aria-controls="pop">Hire me &rarr;</button>
+        <div class="pop" id="pop" hidden>
+          <h2>Contact</h2>
+          <p class="email" id="mail">muhammaddetaaditya@gmail.com</p>
+          <p>Jakarta, Indonesia</p>
+          <div class="pop__row"><button class="copy" id="copy" type="button">Copy email</button>
+            <a href="https://www.linkedin.com/in/deta-aditya">LinkedIn</a><a href="https://github.com/deta-aditya">GitHub</a></div>
+          <a class="cvlink" href="cv/Deta_Aditya_CV.pdf" download="Deta_Aditya_CV.pdf">Download CV (PDF)</a>
+        </div>
+      </div>
+    </header>
+    <nav class="band" id="band" aria-label="Jump to stage"></nav>
+
+    <div class="plate" id="plate">
+      <svg class="s s--fe nfs-p fs" viewBox="0 0 260 247" style="--k:0;--kf:0;aspect-ratio:260/247;--lx:86.0%;--ly:52.0%;--lw:68;--lr:0deg;--lz:3;--lfx:79.12%;--lfy:13.5%;--lfw:18.86;--lfr:0deg;--lfz:2;--px:76.0%;--py:71.88%;--pw:52;--pr:0deg;--pz:3" aria-hidden="true"><use href="#sp-monitor"/></svg>
+      <svg class="s s--fe fs" viewBox="0 0 220 118" style="--k:1;--kf:1;aspect-ratio:220/118;--lx:62.12%;--ly:12.75%;--lw:32;--lr:-4deg;--lz:2;--lfx:91.38%;--lfy:11.5%;--lfw:25.27;--lfr:-4deg;--lfz:2;--px:28.0%;--py:53.71%;--pw:36;--pr:-4deg;--pz:2;--pfx:26.0%;--pfy:54.3%;--pfw:38;--pfr:-4deg;--pfz:2" aria-hidden="true"><use href="#sp-eye"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 260 128" style="--k:2;--kf:2;aspect-ratio:260/128;--lx:66.88%;--ly:76.0%;--lw:34;--lr:3deg;--lz:2;--px:27.0%;--py:69.53%;--pw:28;--pr:3deg;--pz:2" aria-hidden="true"><use href="#sp-prism"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 220 138" style="--k:3;--kf:3;aspect-ratio:220/138;--lx:60.75%;--ly:59.0%;--lw:26;--lr:-8deg;--lz:2;--px:24.0%;--py:85.94%;--pw:24;--pr:-8deg;--pz:2" aria-hidden="true"><use href="#sp-palette"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 160 132" style="--k:4;--kf:4;aspect-ratio:160/132;--lx:59.13%;--ly:41.25%;--lw:18;--lr:-10deg;--lz:2;--px:50.75%;--py:89.84%;--pw:17;--pr:-10deg;--pz:1" aria-hidden="true"><use href="#sp-fan"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 320 25" style="--k:5;--kf:5;aspect-ratio:320/25;--lx:71.38%;--ly:93.5%;--lw:38;--lr:-2deg;--lz:2;--px:72.5%;--py:95.12%;--pw:34;--pr:-2deg;--pz:2" aria-hidden="true"><use href="#sp-ruler"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 320 17" style="--k:6;--kf:6;aspect-ratio:320/17;--lx:71.88%;--ly:88.5%;--lw:34.3;--lr:-3deg;--lz:2;--px:62.0%;--py:50.0%;--pw:24;--pr:-4deg;--pz:2" aria-hidden="true"><use href="#sp-brush"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 300 17" style="--k:7;--kf:7;aspect-ratio:300/17;--lx:74.25%;--ly:6.0%;--lw:18.91;--lr:3deg;--lz:2;--px:37.75%;--py:78.12%;--pw:20;--pr:4deg;--pz:2" aria-hidden="true"><use href="#sp-pencil"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 110 131" style="--k:8;--kf:8;aspect-ratio:110/131;--lx:92.0%;--ly:11.5%;--lw:11.4;--lr:6deg;--lz:1;--px:9.5%;--py:76.95%;--pw:9.43;--pr:6deg;--pz:1" aria-hidden="true"><use href="#sp-typeblock"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 110 135" style="--k:9;--kf:9;aspect-ratio:110/135;--lx:91.25%;--ly:91.0%;--lw:8;--lr:-10deg;--lz:1;--px:43.5%;--py:64.65%;--pw:7.33;--pr:-10deg;--pz:1" aria-hidden="true"><use href="#sp-typeblock2"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 110 138" style="--k:10;--kf:10;aspect-ratio:110/138;--lx:57.88%;--ly:88.25%;--lw:11;--lr:4deg;--lz:1;--px:9.0%;--py:63.67%;--pw:8.15;--pr:4deg;--pz:1" aria-hidden="true"><use href="#sp-typeblock3"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 94 149" style="--k:11;--kf:11;aspect-ratio:94/149;--lx:65.75%;--ly:30.75%;--lw:8.82;--lr:-4deg;--lz:1;--px:9.25%;--py:91.8%;--pw:7.74;--pr:-4deg;--pz:1" aria-hidden="true"><use href="#sp-cursor"/></svg>
+      <svg class="s s--fe nfs-p" viewBox="0 0 176 121" style="--k:12;--kf:12;aspect-ratio:176/121;--lx:84.12%;--ly:11.5%;--lw:16;--lr:6deg;--lz:1;--px:41.0%;--py:92.97%;--pw:12.0;--pr:6deg;--pz:1" aria-hidden="true"><use href="#sp-setsquare"/></svg>
+      <svg class="s s--be nfs-p fs" viewBox="0 0 220 272" style="--k:0;--kf:2;aspect-ratio:220/272;--lx:87.5%;--ly:60.0%;--lw:52;--lr:0deg;--lz:3;--lfx:62.0%;--lfy:54.0%;--lfw:30;--lfr:0deg;--lfz:2;--px:76.0%;--py:75.0%;--pw:44;--pr:0deg;--pz:3" aria-hidden="true"><use href="#sp-mainframe"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 240 165" style="--k:1;--kf:1;aspect-ratio:240/165;--lx:63.0%;--ly:50.0%;--lw:32;--lr:0deg;--lz:2;--px:38.25%;--py:88.09%;--pw:26.6;--pr:0deg;--pz:2" aria-hidden="true"><use href="#sp-gears"/></svg>
+      <svg class="s s--be fs" viewBox="0 0 280 96" style="--k:2;--kf:3;aspect-ratio:280/96;--lx:78.88%;--ly:91.75%;--lw:18.37;--lr:-7deg;--lz:2;--lfx:80.62%;--lfy:92.5%;--lfw:15.4;--lfr:-7deg;--lfz:1;--px:72.0%;--py:48.63%;--pw:22.56;--pr:-7deg;--pz:2;--pfx:18.0%;--pfy:92.38%;--pfw:24.44;--pfr:-7deg;--pfz:2" aria-hidden="true"><use href="#sp-key"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 220 99" style="--k:3;--kf:3;aspect-ratio:220/99;--lx:89.25%;--ly:14.0%;--lw:26;--lr:-5deg;--lz:2;--px:38.75%;--py:74.8%;--pw:21.18;--pr:-5deg;--pz:2" aria-hidden="true"><use href="#sp-card"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 130 201" style="--k:4;--kf:4;aspect-ratio:130/201;--lx:61.0%;--ly:80.25%;--lw:19;--lr:10deg;--lz:2;--px:37.0%;--py:57.42%;--pw:18;--pr:10deg;--pz:2" aria-hidden="true"><use href="#sp-padlock"/></svg>
+      <svg class="s s--be fs" viewBox="0 0 150 199" style="--k:5;--kf:4;aspect-ratio:150/199;--lx:68.75%;--ly:30.25%;--lw:19;--lr:7deg;--lz:2;--lfx:95.38%;--lfy:88.75%;--lfw:10.29;--lfr:7deg;--lfz:1;--px:51.5%;--py:50.59%;--pw:6.79;--pr:7deg;--pz:1;--pfx:51.25%;--pfy:86.52%;--pfw:16;--pfr:7deg;--pfz:1" aria-hidden="true"><use href="#sp-watch"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 120 135" style="--k:6;--kf:6;aspect-ratio:120/135;--lx:57.5%;--ly:31.75%;--lw:10.29;--lr:0deg;--lz:1;--px:92.5%;--py:49.22%;--pw:6.3;--pr:0deg;--pz:1" aria-hidden="true"><use href="#sp-coins"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 240 143" style="--k:7;--kf:7;aspect-ratio:240/143;--lx:60.25%;--ly:16.5%;--lw:22.8;--lr:-4deg;--lz:2;--px:15.0%;--py:51.76%;--pw:20.12;--pr:-4deg;--pz:2" aria-hidden="true"><use href="#sp-abacus"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 150 201" style="--k:8;--kf:8;aspect-ratio:150/201;--lx:77.12%;--ly:15.5%;--lw:16;--lr:4deg;--lz:1;--px:16.0%;--py:75.0%;--pw:18;--pr:4deg;--pz:2" aria-hidden="true"><use href="#sp-ledger"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 156 158" style="--k:9;--kf:9;aspect-ratio:156/158;--lx:70.25%;--ly:87.0%;--lw:13.93;--lr:0deg;--lz:1;--px:13.75%;--py:91.02%;--pw:13.97;--pr:0deg;--pz:1" aria-hidden="true"><use href="#sp-vault"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 110 209" style="--k:10;--kf:10;aspect-ratio:110/209;--lx:70.88%;--ly:69.5%;--lw:8.38;--lr:6deg;--lz:1;--px:21.75%;--py:61.33%;--pw:4.53;--pr:6deg;--pz:1" aria-hidden="true"><use href="#sp-hourglass"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 190 180" style="--k:11;--kf:11;aspect-ratio:190/180;--lx:56.25%;--ly:64.75%;--lw:7.41;--lr:0deg;--lz:1;--px:49.25%;--py:81.84%;--pw:5.02;--pr:0deg;--pz:1" aria-hidden="true"><use href="#sp-scales"/></svg>
+      <svg class="s s--be nfs-p" viewBox="0 0 200 96" style="--k:12;--kf:12;aspect-ratio:200/96;--lx:69.62%;--ly:8.25%;--lw:10.08;--lr:4deg;--lz:1;--px:11.0%;--py:61.33%;--pw:11.34;--pr:4deg;--pz:1" aria-hidden="true"><use href="#sp-telegraph"/></svg>
+      <svg class="s s--ai nfs-p fs" viewBox="0 0 200 281" style="--k:0;--kf:5;aspect-ratio:200/281;--lx:88.0%;--ly:60.0%;--lw:48;--lr:0deg;--lz:3;--lfx:60.38%;--lfy:84.25%;--lfw:16.29;--lfr:0deg;--lfz:1;--px:78.0%;--py:75.0%;--pw:40;--pr:0deg;--pz:3" aria-hidden="true"><use href="#sp-plasma"/></svg>
+      <svg class="s s--ai fs" viewBox="0 0 280 187" style="--k:1;--kf:6;aspect-ratio:280/187;--lx:65.0%;--ly:19.0%;--lw:30;--lr:-5deg;--lz:2;--lfx:94.75%;--lfy:74.0%;--lfw:11.12;--lfr:-3deg;--lfz:1;--px:33.25%;--py:88.87%;--pw:28.88;--pr:-5deg;--pz:2;--pfx:19.75%;--pfy:81.45%;--pfw:30;--pfr:-3deg;--pfz:2" aria-hidden="true"><use href="#sp-neuron"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 248 155" style="--k:2;--kf:2;aspect-ratio:248/155;--lx:63.0%;--ly:52.0%;--lw:24;--lr:-12deg;--lz:2;--px:26.0%;--py:75.0%;--pw:24;--pr:-12deg;--pz:2" aria-hidden="true"><use href="#sp-butterfly"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 220 187" style="--k:3;--kf:3;aspect-ratio:220/187;--lx:73.62%;--ly:83.25%;--lw:17;--lr:10deg;--lz:1;--px:49.0%;--py:61.91%;--pw:14.44;--pr:10deg;--pz:1" aria-hidden="true"><use href="#sp-nautilus"/></svg>
+      <svg class="s s--ai fs" viewBox="0 0 190 191" style="--k:4;--kf:7;aspect-ratio:190/191;--lx:65.62%;--ly:68.5%;--lw:16;--lr:-10deg;--lz:1;--lfx:72.75%;--lfy:63.75%;--lfw:7.8;--lfr:-10deg;--lfz:1;--px:55.5%;--py:92.38%;--pw:9.78;--pr:-10deg;--pz:1;--pfx:88.0%;--pfy:90.04%;--pfw:15.2;--pfr:-10deg;--pfz:1" aria-hidden="true"><use href="#sp-molecule"/></svg>
+      <svg class="s s--ai nfs-p fs" viewBox="0 0 200 198" style="--k:5;--kf:8;aspect-ratio:200/198;--lx:94.12%;--ly:18.75%;--lw:15;--lr:3deg;--lz:1;--lfx:95.88%;--lfy:22.25%;--lfw:7.96;--lfr:3deg;--lfz:1;--px:11.0%;--py:84.18%;--pw:12.63;--pr:3deg;--pz:1" aria-hidden="true"><use href="#sp-crystal"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 180 147" style="--k:6;--kf:6;aspect-ratio:180/147;--lx:69.25%;--ly:10.0%;--lw:11.4;--lr:8deg;--lz:1;--px:40.25%;--py:82.62%;--pw:8.38;--pr:8deg;--pz:1" aria-hidden="true"><use href="#sp-honey"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 240 148" style="--k:7;--kf:7;aspect-ratio:240/148;--lx:81.0%;--ly:13.0%;--lw:26;--lr:-3deg;--lz:2;--px:26.0%;--py:53.71%;--pw:28;--pr:-3deg;--pz:2" aria-hidden="true"><use href="#sp-tree"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 196 131" style="--k:8;--kf:8;aspect-ratio:196/131;--lx:73.88%;--ly:29.0%;--lw:20;--lr:8deg;--lz:2;--px:56.75%;--py:51.56%;--pw:20;--pr:8deg;--pz:2" aria-hidden="true"><use href="#sp-trilobite"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 222 63" style="--k:9;--kf:9;aspect-ratio:222/63;--lx:60.0%;--ly:40.0%;--lw:24;--lr:-10deg;--lz:2;--px:18.25%;--py:65.62%;--pw:24;--pr:-10deg;--pz:2" aria-hidden="true"><use href="#sp-feather"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 240 70" style="--k:10;--kf:10;aspect-ratio:240/70;--lx:62.12%;--ly:90.5%;--lw:26;--lr:6deg;--lz:2;--px:79.0%;--py:48.63%;--pw:28;--pr:6deg;--pz:2" aria-hidden="true"><use href="#sp-telescope"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 150 98" style="--k:11;--kf:11;aspect-ratio:150/98;--lx:92.38%;--ly:7.5%;--lw:14;--lr:20deg;--lz:1;--px:43.5%;--py:95.31%;--pw:9.77;--pr:20deg;--pz:1" aria-hidden="true"><use href="#sp-samara"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 140 136" style="--k:12;--kf:12;aspect-ratio:140/136;--lx:58.25%;--ly:74.75%;--lw:14;--lr:0deg;--lz:1;--px:42.25%;--py:74.8%;--pw:8.38;--pr:0deg;--pz:1" aria-hidden="true"><use href="#sp-starfish"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 150 148" style="--k:13;--kf:13;aspect-ratio:150/148;--lx:56.88%;--ly:30.5%;--lw:9.08;--lr:12deg;--lz:1;--px:14.25%;--py:93.55%;--pw:6.83;--pr:12deg;--pz:1" aria-hidden="true"><use href="#sp-beetle"/></svg>
+      <svg class="s s--ai nfs-p" viewBox="0 0 120 261" style="--k:14;--kf:14;aspect-ratio:120/261;--lx:73.25%;--ly:61.0%;--lw:12;--lr:-8deg;--lz:1;--px:52.5%;--py:76.76%;--pw:12;--pr:-8deg;--pz:1" aria-hidden="true"><use href="#sp-fern"/></svg>
+      <svg class="s s--fn nfs-p fs" viewBox="0 0 240 435" style="--k:0;--kf:9;aspect-ratio:240/435;--lx:87.5%;--ly:54.0%;--lw:40;--lr:0deg;--lz:3;--lfx:57.25%;--lfy:15.5%;--lfw:12.35;--lfr:0deg;--lfz:1;--px:78.0%;--py:64.06%;--pw:38;--pr:0deg;--pz:3" aria-hidden="true"><use href="#sp-egg"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 190 224" style="--k:1;--kf:1;aspect-ratio:190/224;--lx:64.0%;--ly:24.0%;--lw:30;--lr:8deg;--lz:2;--px:26.0%;--py:60.16%;--pw:30;--pr:8deg;--pz:2" aria-hidden="true"><use href="#sp-astrolabe"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 330 65" style="--k:2;--kf:2;aspect-ratio:330/65;--lx:80.12%;--ly:9.5%;--lw:44;--lr:-4deg;--lz:2;--px:30.0%;--py:92.19%;--pw:44;--pr:-4deg;--pz:2" aria-hidden="true"><use href="#sp-sliderule"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 200 167" style="--k:3;--kf:3;aspect-ratio:200/167;--lx:71.38%;--ly:86.0%;--lw:22.8;--lr:0deg;--lz:2;--px:24.0%;--py:81.25%;--pw:15.93;--pr:0deg;--pz:1" aria-hidden="true"><use href="#sp-newtons"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 120 233" style="--k:4;--kf:4;aspect-ratio:120/233;--lx:61.0%;--ly:68.0%;--lw:18;--lr:3deg;--lz:2;--px:48.0%;--py:66.8%;--pw:18;--pr:3deg;--pz:2" aria-hidden="true"><use href="#sp-metronome"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 160 110" style="--k:5;--kf:5;aspect-ratio:160/110;--lx:86.38%;--ly:87.75%;--lw:18.05;--lr:-6deg;--lz:2;--px:75.0%;--py:90.82%;--pw:19.0;--pr:-6deg;--pz:2" aria-hidden="true"><use href="#sp-dominoes"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 150 124" style="--k:6;--kf:6;aspect-ratio:150/124;--lx:57.5%;--ly:44.0%;--lw:12.63;--lr:0deg;--lz:1;--px:39.75%;--py:50.0%;--pw:10.78;--pr:0deg;--pz:1" aria-hidden="true"><use href="#sp-dice"/></svg>
+      <svg class="s s--fn no-p" viewBox="0 0 100 174" style="--k:7;--kf:7;aspect-ratio:100/174;--lx:56.0%;--ly:56.75%;--lw:6.96;--lr:0deg;--lz:1" aria-hidden="true"><use href="#sp-pawn"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 100 373" style="--k:8;--kf:8;aspect-ratio:100/373;--lx:72.88%;--ly:54.5%;--lw:10.45;--lr:8deg;--lz:1;--px:8.25%;--py:80.27%;--pw:6.16;--pr:12deg;--pz:1" aria-hidden="true"><use href="#sp-tuningfork"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 110 144" style="--k:9;--kf:9;aspect-ratio:110/144;--lx:75.25%;--ly:26.25%;--lw:10;--lr:4deg;--lz:1;--px:9.5%;--py:50.39%;--pw:7.35;--pr:4deg;--pz:1" aria-hidden="true"><use href="#sp-blocklambda"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 110 136" style="--k:10;--kf:10;aspect-ratio:110/136;--lx:67.5%;--ly:63.0%;--lw:9;--lr:-6deg;--lz:1;--px:57.75%;--py:58.01%;--pw:5.13;--pr:-6deg;--pz:1" aria-hidden="true"><use href="#sp-blockcompose"/></svg>
+      <svg class="s s--fn nfs-p" viewBox="0 0 110 136" style="--k:11;--kf:11;aspect-ratio:110/136;--lx:95.25%;--ly:15.0%;--lw:9;--lr:6deg;--lz:1;--px:54.5%;--py:49.22%;--pw:5.4;--pr:6deg;--pz:1" aria-hidden="true"><use href="#sp-blockpi"/></svg>
+      <svg class="s s--ar nfs-p fs" viewBox="0 0 260 271" style="--k:0;--kf:10;aspect-ratio:260/271;--lx:84.0%;--ly:64.0%;--lw:64;--lr:0deg;--lz:3;--lfx:67.0%;--lfy:19.0%;--lfw:26.6;--lfr:0deg;--lfz:2;--px:76.0%;--py:75.0%;--pw:46;--pr:0deg;--pz:3" aria-hidden="true"><use href="#sp-rotunda"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 240 88" style="--k:1;--kf:1;aspect-ratio:240/88;--lx:64.0%;--ly:12.0%;--lw:40;--lr:-4deg;--lz:2;--px:30.0%;--py:54.69%;--pw:44;--pr:-4deg;--pz:2" aria-hidden="true"><use href="#sp-blueprint"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 130 203" style="--k:2;--kf:2;aspect-ratio:130/203;--lx:61.0%;--ly:58.0%;--lw:22;--lr:3deg;--lz:2;--px:22.0%;--py:82.81%;--pw:22;--pr:3deg;--pz:2" aria-hidden="true"><use href="#sp-theodolite"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 130 269" style="--k:3;--kf:3;aspect-ratio:130/269;--lx:71.0%;--ly:46.0%;--lw:11.94;--lr:10deg;--lz:1;--px:55.75%;--py:63.28%;--pw:10.27;--pr:10deg;--pz:1" aria-hidden="true"><use href="#sp-dividers"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 170 104" style="--k:4;--kf:4;aspect-ratio:170/104;--lx:63.0%;--ly:30.5%;--lw:26;--lr:0deg;--lz:2;--px:43.75%;--py:78.71%;--pw:27.07;--pr:0deg;--pz:2" aria-hidden="true"><use href="#sp-archstone"/></svg>
+      <svg class="s s--ar no-p" viewBox="0 0 160 155" style="--k:5;--kf:5;aspect-ratio:160/155;--lx:60.5%;--ly:86.75%;--lw:18;--lr:0deg;--lz:2" aria-hidden="true"><use href="#sp-ionic"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 290 42" style="--k:6;--kf:6;aspect-ratio:290/42;--lx:85.5%;--ly:9.25%;--lw:42;--lr:-3deg;--lz:2;--px:27.5%;--py:65.62%;--pw:40;--pr:-3deg;--pz:2" aria-hidden="true"><use href="#sp-spiritlevel"/></svg>
+      <svg class="s s--ar no-p" viewBox="0 0 200 123" style="--k:7;--kf:7;aspect-ratio:200/123;--lx:78.5%;--ly:28.5%;--lw:18;--lr:0deg;--lz:2" aria-hidden="true"><use href="#sp-tsquare"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 80 537" style="--k:8;--kf:8;aspect-ratio:80/537;--lx:68.25%;--ly:74.25%;--lw:4.5;--lr:0deg;--lz:1;--px:7.5%;--py:83.4%;--pw:4.89;--pr:0deg;--pz:1" aria-hidden="true"><use href="#sp-plumb"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 190 89" style="--k:9;--kf:9;aspect-ratio:190/89;--lx:90.88%;--ly:30.5%;--lw:16;--lr:0deg;--lz:1;--px:70.5%;--py:50.39%;--pw:20;--pr:0deg;--pz:2" aria-hidden="true"><use href="#sp-protractor"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 230 60" style="--k:10;--kf:10;aspect-ratio:230/60;--lx:78.38%;--ly:18.25%;--lw:20;--lr:-8deg;--lz:2;--px:88.0%;--py:56.45%;--pw:15.36;--pr:-8deg;--pz:1" aria-hidden="true"><use href="#sp-trowel"/></svg>
+      <svg class="s s--ar nfs-p" viewBox="0 0 150 76" style="--k:11;--kf:11;aspect-ratio:150/76;--lx:86.25%;--ly:22.0%;--lw:12;--lr:0deg;--lz:1;--px:42.25%;--py:90.43%;--pw:16;--pr:0deg;--pz:1" aria-hidden="true"><use href="#sp-bricks"/></svg>
+      <svg class="s s--all fs" viewBox="0 0 220 302" style="--k:0;--kf:11;aspect-ratio:220/302;--lx:86.0%;--ly:54.0%;--lw:50;--lr:0deg;--lz:3;--lfx:86.0%;--lfy:54.0%;--lfw:50;--lfr:0deg;--lfz:3;--px:72.0%;--py:65.62%;--pw:40;--pr:0deg;--pz:3;--pfx:72.0%;--pfy:65.62%;--pfw:40;--pfr:0deg;--pfz:3" aria-hidden="true"><use href="#sp-globe"/></svg>
+      <svg class="s s--all fs" viewBox="0 0 170 173" style="--k:1;--kf:12;aspect-ratio:170/173;--lx:71.62%;--ly:82.5%;--lw:22.8;--lr:-8deg;--lz:2;--lfx:71.62%;--lfy:82.5%;--lfw:22.8;--lfr:-8deg;--lfz:2;--px:41.25%;--py:70.51%;--pw:22;--pr:-8deg;--pz:2;--pfx:41.25%;--pfy:70.51%;--pfw:22;--pfr:-8deg;--pfz:2" aria-hidden="true"><use href="#sp-compass"/></svg>
+      <svg class="s s--all p-only fs" viewBox="0 0 176 121" style="--k:1.62;--kf:1.62;aspect-ratio:176/121;--px:16.25%;--py:64.26%;--pw:20.88;--pr:-14.0deg;--pz:1;--pfx:16.25%;--pfy:64.26%;--pfw:20.88;--pfr:-14.0deg;--pfz:1" aria-hidden="true"><use href="#sp-setsquare"/></svg>
+      <svg class="s s--all p-only fs" viewBox="0 0 248 155" style="--k:4.88;--kf:4.88;aspect-ratio:248/155;--px:90.0%;--py:78.12%;--pw:12.91;--pr:-20.0deg;--pz:1;--pfx:90.0%;--pfy:78.12%;--pfw:12.91;--pfr:-20.0deg;--pfz:1" aria-hidden="true"><use href="#sp-butterfly"/></svg>
+      <svg class="s s--all p-only fs" viewBox="0 0 240 143" style="--k:8.12;--kf:8.12;aspect-ratio:240/143;--px:68.5%;--py:92.77%;--pw:13.72;--pr:-6.0deg;--pz:1;--pfx:68.5%;--pfy:92.77%;--pfw:13.72;--pfr:-6.0deg;--pfz:1" aria-hidden="true"><use href="#sp-abacus"/></svg>
+      <svg class="s s--all p-only fs" viewBox="0 0 220 187" style="--k:11.38;--kf:11.38;aspect-ratio:220/187;--px:37.25%;--py:92.97%;--pw:9.15;--pr:12.0deg;--pz:1;--pfx:37.25%;--pfy:92.97%;--pfw:9.15;--pfr:12.0deg;--pfz:1" aria-hidden="true"><use href="#sp-nautilus"/></svg>
+      <div class="overlay">
+        <h1 class="title">
+          <span class="sr-only">Senior Fullstack Engineer</span>
+          <span class="stage" aria-hidden="true">
+            <span class="word" id="word"><span class="word__in">Fullstack</span></span>
+            <span class="tail" id="tail"><span class="tail__in">Engineer</span></span>
+          </span>
+        </h1>
+        <p class="caption" id="caption" aria-hidden="true"><span>The whole system, designed as one</span></p>
+      </div>
+    </div>
+
+    <footer class="base">
+      <dl class="spec">
+        <div><dt>Habitat</dt><dd>TypeScript, React</dd></div>
+        <div><dt>Method</dt><dd>Functional design, clean architecture</dd></div>
+      </dl>
+      <nav class="links" aria-label="Profiles">
+        <a href="https://github.com/deta-aditya">GitHub</a>
+        <a href="https://www.youtube.com/@codebedrock">YouTube</a>
+        <button id="replay" type="button" hidden>Replay intro</button>
+      </nav>
+    </footer>
+  </section>
+</main>
+
+<script>
+/* The hero is a small state machine. Stages are plain data.
+   JS only advances data-stage on .hero and swaps the title text;
+   CSS owns every visual, including which specimens are on the page
+   and where they sit. To add a stage later: add an object here, a
+   plate color, and a set of specimens tagged with the new stage. */
+(() => {
+  const STAGES = Object.freeze([
+    { id: "frontend",     word: "Frontend",     caption: "Layout, state and the pixels people touch",      hold: 2500 },
+    { id: "backend",      word: "Backend",      caption: "Services, data and the contracts between them",  hold: 2500 },
+    { id: "ai-native",    word: "AI-native",    caption: "Models built into the product, not bolted on",   hold: 2500 },
+    { id: "functional",   word: "Functional",   tail: "Programmer", caption: "Pure functions, immutable data, composition", hold: 2500, fit: 0.86 },
+    { id: "architecture", word: "Software",     tail: "Architect", caption: "Boundaries, layers and the cost of change", hold: 2500 },
+    { id: "fullstack",    word: "Fullstack",    caption: "The whole system, designed as one",              hold: 2200, terminal: true },
+  ]);
+
+  const hero = document.getElementById("hero");
+  const word = document.getElementById("word");
+  const tail = document.getElementById("tail");
+  const TAIL = "Engineer";
+  const caption = document.getElementById("caption");
+  const replayBtn = document.getElementById("replay");
+  const terminal = STAGES[STAGES.length - 1];
+  const band = document.getElementById("band");
+  const SEG_COLOR = { frontend: "--c-ui", backend: "--c-srv", "ai-native": "--c-ai", functional: "--c-fn", architecture: "--c-ar", fullstack: "--c-leaf" };
+  const LABEL = { frontend: "Frontend", backend: "Backend", "ai-native": "AI-native", functional: "Functional", architecture: "Architecture", fullstack: "Fullstack" };
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // Pure: stage data in, markup out. New nodes restart the CSS animations.
+  const wordHtml = (s) => `<span class="word__in" style="--fit:${s.fit || 1}">${esc(s.word)}</span>`;
+  const captionHtml = (s) => `<span>${esc(s.caption)}</span>`;
+
+  // Same handoff as the specimens (see --gate in CSS): the old title plays
+  // its exit while the old specimens leave, and the new text is only
+  // swapped in, and animates in, once that exit is done.
+  const GATE = 500;
+
+  const swap = (stage) => {
+    word.innerHTML = wordHtml(stage);
+    tail.innerHTML = `<span class="tail__in">${esc(stage.tail || TAIL)}</span>`;
+    caption.innerHTML = captionHtml(stage);
+    hero.classList.remove("is-leaving");
+  };
+
+  const show = (stage, settled = false, animate = false) => {
+    hero.dataset.stage = stage.id;
+    hero.classList.toggle("is-settled", settled);
+    band.querySelectorAll(".band__seg").forEach((b) =>
+      b.dataset.id === stage.id ? b.setAttribute("aria-current", "true") : b.removeAttribute("aria-current"));
+    if (animate) {
+      hero.classList.add("is-leaving");
+      later(() => swap(stage), GATE);
+    } else {
+      swap(stage);
+    }
+  };
+
+  let timers = [];
+  let running = false;
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+  const stop = () => { timers.forEach(clearTimeout); timers = []; };
+
+  // Stage navigation. Only available once the intro is over, and it never
+  // restarts the sequence: it just runs the normal handoff to the chosen stage.
+  const buildNav = () => {
+    band.innerHTML = STAGES.map((s) =>
+      `<button type="button" class="band__seg" data-id="${s.id}" data-label="${esc(LABEL[s.id])}" aria-label="${esc(LABEL[s.id])}" style="--c:var(${SEG_COLOR[s.id]})"></button>`
+    ).join("");
+    band.querySelectorAll(".band__seg").forEach((b, i) =>
+      b.addEventListener("click", () => go(STAGES[i])));
+  };
+  const setNav = (on) => {
+    band.classList.toggle("is-nav", on);
+    band.querySelectorAll(".band__seg").forEach((b) => (b.tabIndex = on ? 0 : -1));
+    if (on) band.querySelectorAll(".band__seg").forEach((b) =>
+      b.dataset.id === hero.dataset.stage ? b.setAttribute("aria-current", "true") : b.removeAttribute("aria-current"));
+  };
+  const go = (stage) => {
+    if (running || hero.dataset.stage === stage.id) return;
+    stop();
+    show(stage, stage === terminal, true);
+  };
+
+  const finish = (settle) => {
+    running = false;
+    if (settle) hero.classList.add("is-settled");
+    replayBtn.hidden = false;
+    setNav(true);
+  };
+
+  const play = () => {
+    stop();
+    running = true;
+    replayBtn.hidden = true;
+    setNav(false);
+    let at = 0;
+    STAGES.forEach((stage) => {
+      later(() => show(stage, false, true), at);
+      at += stage.hold;
+    });
+    later(() => finish(true), at);
+  };
+
+  const skip = () => {
+    if (!running) return;
+    stop();
+    show(terminal, true);
+    finish(false);
+  };
+
+  // Only intent to move forward (scroll down, swipe up, forward keys) skips ahead.
+  // Scrolling up or other keys must not end the sequence.
+  const FORWARD_KEYS = new Set(["ArrowDown", "PageDown", "End", " ", "Enter", "Escape"]);
+  let touchY = null;
+  window.addEventListener("wheel", (e) => { if (e.deltaY > 0) skip(); }, { passive: true });
+  window.addEventListener("keydown", (e) => { if (FORWARD_KEYS.has(e.key)) skip(); }, { passive: true });
+  window.addEventListener("touchstart", (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  window.addEventListener("touchmove", (e) => {
+    if (touchY !== null && touchY - e.touches[0].clientY > 24) { touchY = null; skip(); }
+  }, { passive: true });
+  replayBtn.addEventListener("click", play);
+
+  buildNav();
+  setNav(false);
+
+  if (reduceMotion) {
+    show(terminal, true);
+    setNav(true);
+    return;
+  }
+
+  // Start once the title face is ready, with a safety timeout.
+  const timeout = new Promise((resolve) => setTimeout(resolve, 1500));
+  const fontReady = document.fonts && document.fonts.load
+    ? document.fonts.load("700 1em Cinzel").catch(() => {})
+    : Promise.resolve();
+  Promise.race([fontReady, timeout]).then(play);
+})();
+
+(() => {
+  const hire = document.getElementById("hire"), pop = document.getElementById("pop");
+  const toggle = (o) => { pop.hidden = !o; hire.setAttribute("aria-expanded", String(o)); };
+  hire.addEventListener("click", () => toggle(pop.hidden));
+  addEventListener("keydown", (e) => { if (e.key === "Escape") toggle(false); });
+  document.addEventListener("click", (e) => { if (!pop.hidden && !e.target.closest(".hirewrap")) toggle(false); });
+  document.getElementById("copy").addEventListener("click", async (e) => {
+    const m = document.getElementById("mail"), b = e.currentTarget;
+    try { await navigator.clipboard.writeText(m.textContent); }
+    catch (_) { const r = document.createRange(); r.selectNodeContents(m); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+    b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy email"), 1600);
+  });
+})();
+</script>
